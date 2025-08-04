@@ -51,72 +51,78 @@ npm run dev
 - Frontend: http://localhost:5174
 - Backend API: http://localhost:3100/api
 
-## Nginx Configuration for asteroidsheep.work
+## Production Deployment Strategy
 
-For production deployment with custom domain, create an Nginx configuration:
+### Quick Production Setup
 
-```nginx
-server {
-    listen 80;
-    server_name asteroidsheep.work;
-    
-    # Frontend (React app)
-    location / {
-        proxy_pass http://localhost:5174;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
-    }
-    
-    # Backend API
-    location /api {
-        proxy_pass http://localhost:3100;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
+```bash
+# Build and deploy to production
+npm run deploy:prod
+
+# Or step by step:
+npm run build                    # Build frontend static assets
+pm2 start ecosystem.config.js    # Start backend with pm2
+sudo nginx -s reload             # Reload Nginx configuration
 ```
 
-### Setup Steps:
-1. Save the configuration as `/etc/nginx/sites-available/asteroidsheep.work`
-2. Create symlink: `sudo ln -s /etc/nginx/sites-available/asteroidsheep.work /etc/nginx/sites-enabled/`
-3. Test configuration: `sudo nginx -t`
-4. Reload Nginx: `sudo nginx -s reload`
-5. Update your hosts file or DNS to point `asteroidsheep.work` to your server IP
+### Production Architecture
 
-### Vite Configuration
-The vite.config.ts is already configured to accept connections from `asteroidsheep.work`:
-```typescript
-server: {
-  host: true,
-  allowedHosts: ['asteroidsheep.work', 'localhost'],
-  // ...
-}
+- **Frontend**: Static files served by Express from `client/build/`
+- **Backend**: Express server managed by pm2 on port 3100
+- **Database**: MongoDB running locally
+- **Proxy**: Nginx reverse proxies all requests to Express
+- **Ports**: Only 80/443 exposed publicly, internal services on 3100
+
+### Nginx Configuration
+
+The production Nginx configuration (`nginx/asteroidsheep.conf`) includes:
+- Reverse proxy to Express server (which serves both static files and API)
+- Security headers and gzip compression
+- Simplified configuration with Express handling all routing
+
+### Development vs Production Workflows
+
+**Development:**
+```bash
+npm run dev:start    # Automated dev environment setup
+# OR
+npm run dev          # Start Express server with nodemon (serves built React app)
 ```
 
-## Production Deployment
+**Production:**
+```bash
+npm run build        # Build React app with Webpack
+npm start            # Start Express server (serves static files + API)
+npm run deploy:prod  # Complete production deployment with pm2
+npm run prod:status  # Check backend status
+npm run prod:logs    # View backend logs
+npm run prod:restart # Restart backend
+```
 
-### Backend (Express + MongoDB)
-- Use the included Dockerfile for containerization
-- Set production environment variables
-- Configure MongoDB Atlas or self-hosted MongoDB
-- Deploy to platforms like Railway, Render, or AWS
+### Process Management with pm2
 
-### Frontend (React)
-- Build: `cd client && npm run build`
-- Deploy the `client/dist` folder to Netlify, Vercel, or CDN
-- Update API base URL for production backend
+The `ecosystem.config.js` provides:
+- Automatic restarts on crashes
+- Memory limit monitoring
+- Separate dev/prod environment configurations
+- Centralized logging to `logs/` directory
+
+### Manual Nginx Setup
+
+If the automated deployment doesn't work:
+
+1. Copy configuration:
+```bash
+sudo cp nginx/asteroidsheep.conf /opt/homebrew/etc/nginx/sites-enabled/
+```
+
+2. The configuration now proxies all requests to Express, so no path updates needed.
+
+3. Test and reload:
+```bash
+sudo nginx -t
+sudo nginx -s reload
+```
 
 ## Features Verified
 ✅ MongoDB connection and data persistence

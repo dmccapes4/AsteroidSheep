@@ -2,10 +2,11 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const morgan = require('morgan');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3100;
 
 app.use(cors());
 app.use(morgan('combined'));
@@ -26,16 +27,6 @@ mongoose.connect(process.env.MONGODB_URI, {
 const asteroidRoutes = require('./routes/asteroids');
 app.use('/api/asteroids', asteroidRoutes);
 
-app.get('/', (req, res) => {
-  res.json({
-    message: 'AsteroidSheep Game API',
-    version: '1.0.0',
-    endpoints: {
-      asteroids: '/api/asteroids'
-    }
-  });
-});
-
 app.get('/api', (req, res) => {
   res.json({
     message: 'AsteroidSheep API v1.0.0',
@@ -47,6 +38,16 @@ app.get('/api', (req, res) => {
       'DELETE /api/asteroids/:id': 'Delete asteroid by ID'
     }
   });
+});
+
+const buildPath = path.join(__dirname, '../client/build');
+app.use(express.static(buildPath));
+
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    return res.status(404).json({ error: 'API endpoint not found' });
+  }
+  res.sendFile(path.join(buildPath, 'index.html'));
 });
 
 app.listen(PORT, () => {
