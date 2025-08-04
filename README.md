@@ -69,7 +69,7 @@ asteroid-sheep/
 
    Or start individually:
    ```bash
-   # Terminal 1 - Backend (port 3000)
+   # Terminal 1 - Backend (port 3100)
    npm run server:dev
    
    # Terminal 2 - Frontend (port 5173)
@@ -78,13 +78,13 @@ asteroid-sheep/
 
 4. **Access the application:**
    - Frontend: http://localhost:5173
-   - Backend API: http://localhost:3000/api
+   - Backend API: http://localhost:3100/api
 
 ## 🔧 Environment Configuration
 
 ### Server (.env)
 ```env
-PORT=3000
+PORT=3100
 MONGODB_URI=mongodb://localhost:27017/asteroid-sheep
 NODE_ENV=development
 ```
@@ -201,7 +201,7 @@ Make sure to set the appropriate environment variables in your deployment platfo
 ```bash
 # Build and run with Docker (if Dockerfile is added)
 docker build -t asteroid-sheep-server ./server
-docker run -p 3000:3000 asteroid-sheep-server
+docker run -p 3100:3100 asteroid-sheep-server
 ```
 
 ## 🤝 Contributing
@@ -240,7 +240,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
    - For production, ensure CORS is properly configured
 
 3. **Port Conflicts**
-   - Backend runs on port 3000, frontend on 5173
+   - Backend runs on port 3100, frontend on 5173
    - Change ports in respective configuration files if needed
 
 4. **Dependencies Issues**

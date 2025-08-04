@@ -33,7 +33,7 @@ cd client && npm install && cd ..
 cp server/.env.example server/.env
 
 # Edit server/.env with your MongoDB connection:
-# PORT=3000
+# PORT=3100
 # MONGODB_URI=mongodb://localhost:27017/asteroidSheep
 # NODE_ENV=development
 ```
@@ -62,7 +62,7 @@ npm run dev
 
 6. **Access the application:**
 - Frontend: http://localhost:5174
-- Backend API: http://localhost:3000/api
+- Backend API: http://localhost:3100/api
 
 ## Production Deployment
 
