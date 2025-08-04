@@ -51,6 +51,60 @@ npm run dev
 - Frontend: http://localhost:5174
 - Backend API: http://localhost:3100/api
 
+## Nginx Configuration for asteroidsheep.work
+
+For production deployment with custom domain, create an Nginx configuration:
+
+```nginx
+server {
+    listen 80;
+    server_name asteroidsheep.work;
+    
+    # Frontend (React app)
+    location / {
+        proxy_pass http://localhost:5174;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+    
+    # Backend API
+    location /api {
+        proxy_pass http://localhost:3100;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+### Setup Steps:
+1. Save the configuration as `/etc/nginx/sites-available/asteroidsheep.work`
+2. Create symlink: `sudo ln -s /etc/nginx/sites-available/asteroidsheep.work /etc/nginx/sites-enabled/`
+3. Test configuration: `sudo nginx -t`
+4. Reload Nginx: `sudo nginx -s reload`
+5. Update your hosts file or DNS to point `asteroidsheep.work` to your server IP
+
+### Vite Configuration
+The vite.config.ts is already configured to accept connections from `asteroidsheep.work`:
+```typescript
+server: {
+  host: true,
+  allowedHosts: ['asteroidsheep.work', 'localhost'],
+  // ...
+}
+```
+
 ## Production Deployment
 
 ### Backend (Express + MongoDB)

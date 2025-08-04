@@ -10,6 +10,8 @@ export default defineConfig({
     },
   },
   server: {
+    host: true,
+    allowedHosts: ['asteroidsheep.work', 'www.asteroidsheep.work', 'localhost'],
     proxy: {
       '/api': {
         target: 'http://localhost:3100',

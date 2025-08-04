@@ -33,6 +33,54 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/stats/summary', async (req, res) => {
+  try {
+    const stats = await Asteroid.aggregate([
+      {
+        $group: {
+          _id: null,
+          total: { $sum: 1 },
+          avgVelocity: { $avg: '$velocity' },
+          threatLevels: {
+            $push: '$threatLevel'
+          },
+          sizes: {
+            $push: '$size'
+          }
+        }
+      }
+    ]);
+    
+    if (stats.length === 0) {
+      return res.json({
+        total: 0,
+        avgVelocity: 0,
+        threatDistribution: {},
+        sizeDistribution: {}
+      });
+    }
+    
+    const threatDistribution = stats[0].threatLevels.reduce((acc, level) => {
+      acc[level] = (acc[level] || 0) + 1;
+      return acc;
+    }, {});
+    
+    const sizeDistribution = stats[0].sizes.reduce((acc, size) => {
+      acc[size] = (acc[size] || 0) + 1;
+      return acc;
+    }, {});
+    
+    res.json({
+      total: stats[0].total,
+      avgVelocity: Math.round(stats[0].avgVelocity * 100) / 100,
+      threatDistribution,
+      sizeDistribution
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.get('/:id', async (req, res) => {
   try {
     const asteroid = await Asteroid.findById(req.params.id);
@@ -78,54 +126,6 @@ router.delete('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Asteroid not found' });
     }
     res.json({ message: 'Asteroid deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-router.get('/stats/summary', async (req, res) => {
-  try {
-    const stats = await Asteroid.aggregate([
-      {
-        $group: {
-          _id: null,
-          total: { $sum: 1 },
-          avgVelocity: { $avg: '$velocity' },
-          threatLevels: {
-            $push: '$threatLevel'
-          },
-          sizes: {
-            $push: '$size'
-          }
-        }
-      }
-    ]);
-    
-    if (stats.length === 0) {
-      return res.json({
-        total: 0,
-        avgVelocity: 0,
-        threatDistribution: {},
-        sizeDistribution: {}
-      });
-    }
-    
-    const threatDistribution = stats[0].threatLevels.reduce((acc, level) => {
-      acc[level] = (acc[level] || 0) + 1;
-      return acc;
-    }, {});
-    
-    const sizeDistribution = stats[0].sizes.reduce((acc, size) => {
-      acc[size] = (acc[size] || 0) + 1;
-      return acc;
-    }, {});
-    
-    res.json({
-      total: stats[0].total,
-      avgVelocity: Math.round(stats[0].avgVelocity * 100) / 100,
-      threatDistribution,
-      sizeDistribution
-    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

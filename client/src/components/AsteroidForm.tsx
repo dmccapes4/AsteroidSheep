@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { useEffect } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -17,18 +18,43 @@ interface AsteroidFormProps {
 export function AsteroidForm({ isOpen, onClose, onSubmit, asteroid, isLoading }: AsteroidFormProps) {
   const form = useForm({
     defaultValues: {
-      name: asteroid?.name || '',
+      name: '',
       trajectory: {
-        x: asteroid?.trajectory.x || 0,
-        y: asteroid?.trajectory.y || 0,
-        z: asteroid?.trajectory.z || 0,
-        direction: asteroid?.trajectory.direction || 0,
+        x: 0,
+        y: 0,
+        z: 0,
+        direction: 0,
       },
-      velocity: asteroid?.velocity || 0,
-      size: asteroid?.size || 'medium',
-      mass: asteroid?.mass || 0,
+      velocity: 0,
+      size: 'medium',
+      mass: 0,
     },
   });
+
+  useEffect(() => {
+    if (asteroid) {
+      form.reset({
+        name: asteroid.name || '',
+        trajectory: {
+          x: asteroid.trajectory.x || 0,
+          y: asteroid.trajectory.y || 0,
+          z: asteroid.trajectory.z || 0,
+          direction: asteroid.trajectory.direction || 0,
+        },
+        velocity: asteroid.velocity || 0,
+        size: asteroid.size || 'medium',
+        mass: asteroid.mass || 0,
+      });
+    } else {
+      form.reset({
+        name: '',
+        trajectory: { x: 0, y: 0, z: 0, direction: 0 },
+        velocity: 0,
+        size: 'medium',
+        mass: 0,
+      });
+    }
+  }, [asteroid, form.reset]);
 
   const handleSubmit = (data: any) => {
     onSubmit({
@@ -48,6 +74,9 @@ export function AsteroidForm({ isOpen, onClose, onSubmit, asteroid, isLoading }:
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{asteroid ? 'Edit Asteroid' : 'Add New Asteroid'}</DialogTitle>
+          <DialogDescription>
+            {asteroid ? 'Update the asteroid information below.' : 'Enter the details for the new asteroid.'}
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
