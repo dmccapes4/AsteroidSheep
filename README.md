@@ -66,8 +66,8 @@ asteroid-sheep/
    ```
 
 4. **Access the application:**
-   - Frontend: http://localhost:5174
-   - Backend API: http://localhost:3100/api
+   - Application: http://localhost:3100
+   - API: http://localhost:3100/api
 
 ### Manual Setup (if script fails)
 
@@ -168,12 +168,11 @@ npm run dev              # Start both client and server
 npm run install:all      # Install all dependencies
 npm run client:dev       # Start only frontend
 npm run server:dev       # Start only backend
-npm run client:build     # Build frontend for production
+npm run build           # Build frontend for production
 
 # Client (from client/ directory)
-npm run dev              # Start development server
-npm run build            # Build for production
-npm run preview          # Preview production build
+npm run dev              # Start Webpack dev server
+npm run build            # Build for production with Webpack
 
 # Server (from server/ directory)
 npm run dev              # Start with nodemon (auto-reload)
@@ -184,7 +183,7 @@ npm start                # Start production server
 
 **Frontend:**
 - React 18 with TypeScript
-- Vite for build tooling
+- Webpack for build tooling
 - TailwindCSS for styling
 - shadcn/ui component library
 - React Hook Form for form handling
@@ -204,7 +203,7 @@ npm start                # Start production server
 ```bash
 cd client
 npm run build
-# Deploy the dist/ folder to your hosting service
+# Deploy the build/ folder to your hosting service
 ```
 
 ### Backend Deployment
@@ -255,12 +254,12 @@ This project is licensed under the MIT License - see the LICENSE file for detail
    - Verify network connectivity for cloud databases
 
 2. **CORS Issues**
-   - The Vite proxy should handle this in development
+   - Express serves both frontend and API, so no proxy needed
    - For production, ensure CORS is properly configured
 
 3. **Port Conflicts**
-   - Backend runs on port 3100, frontend on 5173
-   - Change ports in respective configuration files if needed
+   - Application runs on port 3100 (both frontend and backend)
+   - Change port in server/.env if needed
 
 4. **Dependencies Issues**
    - Run `npm run install:all` to ensure all packages are installed
