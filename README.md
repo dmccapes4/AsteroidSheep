@@ -47,38 +47,57 @@ asteroid-sheep/
 
 ### Quick Start
 
-1. **Clone and install dependencies:**
+1. **Clone the repository:**
    ```bash
-   git clone <repository-url>
-   cd asteroid-sheep
-   npm run install:all
+   git clone https://github.com/dmccapes4/AsteroidSheep.git
+   cd AsteroidSheep
+   git checkout devin/1733297154-asteroidSheep-fullstack-setup
    ```
 
-2. **Configure environment variables:**
+2. **Run the setup script (macOS):**
    ```bash
-   cd server
-   cp .env.example .env
-   # Edit .env with your MongoDB URI and port
+   chmod +x setup-macos.sh
+   ./setup-macos.sh
    ```
 
-3. **Start development servers:**
+3. **Start the application:**
    ```bash
-   # From root directory - starts both client and server
    npm run dev
    ```
 
-   Or start individually:
+4. **Access the application:**
+   - Frontend: http://localhost:5174
+   - Backend API: http://localhost:3100/api
+
+### Manual Setup (if script fails)
+
+1. **Install dependencies:**
    ```bash
-   # Terminal 1 - Backend (port 3100)
-   npm run server:dev
-   
-   # Terminal 2 - Frontend (port 5173)
-   npm run client:dev
+   npm install
+   cd server && npm install && cd ..
+   cd client && npm install && cd ..
    ```
 
-4. **Access the application:**
-   - Frontend: http://localhost:5173
-   - Backend API: http://localhost:3100/api
+2. **Create server/.env file:**
+   ```bash
+   cat > server/.env << EOF
+   PORT=3100
+   MONGODB_URI=mongodb://localhost:27017/asteroid-sheep
+   NODE_ENV=development
+   EOF
+   ```
+
+3. **Install and start MongoDB (macOS):**
+   ```bash
+   brew tap mongodb/brew
+   brew install mongodb-community
+   brew services start mongodb-community
+   ```
+
+4. **Start the application:**
+   ```bash
+   npm run dev
+   ```
 
 ## 🔧 Environment Configuration
 

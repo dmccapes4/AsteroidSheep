@@ -11,53 +11,40 @@
 
 1. **Clone and navigate to project:**
 ```bash
-git clone <repository-url>
+git clone https://github.com/dmccapes4/AsteroidSheep.git
 cd AsteroidSheep
+git checkout devin/1733297154-asteroidSheep-fullstack-setup
 ```
 
-2. **Install dependencies:**
+2. **Quick setup (macOS):**
 ```bash
-# Install root dependencies (for concurrent development)
+chmod +x setup-macos.sh
+./setup-macos.sh
+```
+
+3. **Manual setup (if script fails):**
+```bash
+# Install dependencies
 npm install
-
-# Install server dependencies
 cd server && npm install && cd ..
-
-# Install client dependencies  
 cd client && npm install && cd ..
-```
 
-3. **Configure environment:**
-```bash
-# Copy server environment template
-cp server/.env.example server/.env
+# Create server/.env file
+cat > server/.env << EOF
+PORT=3100
+MONGODB_URI=mongodb://localhost:27017/asteroid-sheep
+NODE_ENV=development
+EOF
 
-# Edit server/.env with your MongoDB connection:
-# PORT=3100
-# MONGODB_URI=mongodb://localhost:27017/asteroidSheep
-# NODE_ENV=development
-```
-
-4. **Start MongoDB:**
-```bash
-# Ubuntu/Debian
-sudo systemctl start mongod
-
-# macOS with Homebrew
+# Install and start MongoDB (macOS)
+brew tap mongodb/brew
+brew install mongodb-community
 brew services start mongodb-community
-
-# Windows
-net start MongoDB
 ```
 
-5. **Run the application:**
+4. **Start the application:**
 ```bash
-# Start both client and server concurrently
 npm run dev
-
-# Or start individually:
-# Terminal 1: cd server && npm start
-# Terminal 2: cd client && npm run dev
 ```
 
 6. **Access the application:**
@@ -87,6 +74,7 @@ npm run dev
 ✅ Real-time statistics dashboard
 ✅ Error handling and user feedback
 ✅ Vite proxy for seamless development
+✅ macOS setup script for easy installation
 
 ## API Endpoints
 - GET /api/asteroids - List all asteroids
